@@ -1,0 +1,72 @@
+import urllib.request
+from bs4 import BeautifulSoup
+import requests
+from pandas import DataFrame
+import re
+from datetime import datetime
+
+
+# 경제지수 반환 ###################################################
+def index(basic_url, className, num):
+    fp = urllib.request.urlopen(basic_url)
+
+    source = fp.read()
+
+    fp.close()
+
+    soup = BeautifulSoup(source, 'html.parser')
+    soup = soup.findAll("span",class_= className)
+    
+    return soup[num].string
+
+
+#키워드(경제관련) 뉴스 목록 반환###########################################
+def news(query):
+    date = str(datetime.now())
+    date = date[:date.rfind(':')].replace(' ', '_')
+    date = date.replace(':','시') + '분'
+
+    news_num = 3
+    
+    news_url = 'https://search.naver.com/search.naver?where=news&sm=tab_jum&query={}'
+    
+    req = requests.get(news_url.format(query))
+    soup = BeautifulSoup(req.text, 'html.parser')
+    
+    news_dict = {}
+    idx = 0
+    
+    while idx < news_num:
+    
+        table = soup.find('ul',{'class' : 'list_news'})
+        li_list = table.find_all('li', {'id': re.compile('sp_nws.*')})
+        area_list = [li.find('div', {'class' : 'news_area'}) for li in li_list]
+        a_list = [area.find('a', {'class' : 'news_tit'}) for area in area_list]
+
+        for n in a_list[:min(len(a_list), news_num-idx)]:
+            news_dict[idx] = {'title' : n.get('title'), 'url' : n.get('href') }
+            idx += 1
+    
+    for i in range(3):
+        print(f"제목: {news_dict[i]['title']}")
+        print(f"링크: {news_dict[i]['url']}")
+        print()
+        
+        
+##################################################################################
+def economy(text):
+    
+    if text == '코스피':
+        print("코스피:", index("https://finance.naver.com/sise/", "num num2", 0))
+        print()
+        news('코스피')
+        
+    if text == '코스닥':
+        print("코스닥:", index("https://finance.naver.com/sise/", "num num2", 1))
+        print()
+        news('코스닥')
+        
+    if text == '환율':
+        print("환율:", index("https://finance.naver.com/marketindex/", "value", 0))
+        print()
+        news('환율')
