@@ -37,7 +37,7 @@ def news(query):
     idx = 0
     
     while idx < news_num:
-    
+  
         table = soup.find('ul',{'class' : 'list_news'})
         li_list = table.find_all('li', {'id': re.compile('sp_nws.*')})
         area_list = [li.find('div', {'class' : 'news_area'}) for li in li_list]
@@ -47,26 +47,24 @@ def news(query):
             news_dict[idx] = {'title' : n.get('title'), 'url' : n.get('href') }
             idx += 1
     
-    for i in range(3):
-        print(f"제목: {news_dict[i]['title']}")
-        print(f"링크: {news_dict[i]['url']}")
-        print()
+    article = ""
+    for i in range(3): 
+        article += "제목: " + news_dict[i]['title'] + "\n" + "링크: " + news_dict[i]['url'] + "\n" 
+        
+    return article
         
         
 ##################################################################################
 def economy(text):
     
     if text == '코스피':
-        print("코스피:", index("https://finance.naver.com/sise/", "num num2", 0))
-        print()
-        news('코스피')
+        kospi = "코스피: " + index("https://finance.naver.com/sise/", "num num2", 0) + "\n\n" +news('코스피')
+        return kospi
         
     if text == '코스닥':
-        print("코스닥:", index("https://finance.naver.com/sise/", "num num2", 1))
-        print()
-        news('코스닥')
+        kosdaq = "코스닥:" + index("https://finance.naver.com/sise/", "num num2", 1) + "\n\n" + news('코스닥')
+        return kosdaq
         
     if text == '환율':
-        print("환율:", index("https://finance.naver.com/marketindex/", "value", 0))
-        print()
-        news('환율')
+        exchange_rate = "환율:" + index("https://finance.naver.com/marketindex/", "value", 0) + "\n\n" + news('환율')
+        return exchange_rate
