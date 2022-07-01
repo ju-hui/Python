@@ -59,12 +59,15 @@ def economy(text):
     
     if text == '코스피':
         kospi = "코스피: " + index("https://finance.naver.com/sise/", "num num2", 0) + "\n\n" +news('코스피')
+        
         return kospi
         
     if text == '코스닥':
         kosdaq = "코스닥:" + index("https://finance.naver.com/sise/", "num num2", 1) + "\n\n" + news('코스닥')
+        
         return kosdaq
         
     if text == '환율':
         exchange_rate = "환율:" + index("https://finance.naver.com/marketindex/", "value", 0) + "\n\n" + news('환율')
+        
         return exchange_rate
